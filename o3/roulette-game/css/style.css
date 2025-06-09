@@ -1,0 +1,31 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #c9dbec;
+}
+
+.game-container {
+    text-align: center;
+}
+
+canvas {
+    background: #ecf0f1;
+    border: 2px solid #34495e;
+    border-radius: 50%;
+}
+
+.roulette-wheel {
+    position: relative;
+}
+
+.ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    transition: transform 0.1s ease;
+}
