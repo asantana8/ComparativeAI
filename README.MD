@@ -1,333 +1,47 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Comparativo de IA: Jogo de Roleta</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Harmony (Warm Neutrals) -->
-    <!-- Application Structure Plan: A single-page dashboard designed for comparison. It starts with a high-level summary (Intro), moves to a detailed, interactive comparison dashboard (Dashboard Section) with charts and qualitative text, and concludes with a technology overview. This structure guides the user from the general project concept to the specific comparative data, making it more digestible than a linear report. Tabs or sections within the dashboard allow for focused analysis of each AI model. -->
-    <!-- Visualization & Content Choices: The README describes a comparison project. Goal: Compare AIs. Method: Side-by-side dashboard. Visualizations: Bar chart for direct score comparison (Code Quality), Radar chart for multi-variable performance comparison (Load Time, FPS), Doughnut chart for percentage-based metric (Feature Completeness). All charts use Chart.js on Canvas. Text blocks provide qualitative analysis. Interaction: Clicking tabs/buttons filters the view to a specific AI, allowing focused study. This approach directly supports the comparison goal. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f1eb;
-            color: #403d39;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
-        .nav-button {
-            transition: all 0.3s ease;
-        }
-        .nav-button.active {
-            background-color: #bfaca3;
-            color: #ffffff;
-            font-weight: 700;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body class="antialiased">
+# 🎲 Jogo de Roleta - Desenvolvimento com IA ✨
 
-    <div class="container mx-auto p-4 md:p-8">
-        
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-[#252422] mb-2">🎲 Jogo de Roleta - Desenvolvimento com IA</h1>
-            <p class="text-lg text-[#6b6862]">Um painel comparativo sobre a performance de diferentes modelos de IA na criação de um jogo.</p>
-        </header>
+Este repositório contém o projeto de um **jogo de roleta**, similar aos encontrados em cassinos, desenvolvido utilizando tecnologias web padrão.
 
-        <main>
-            <section id="introduction" class="mb-12 bg-white/50 p-6 rounded-2xl shadow-sm">
-                <h2 class="text-2xl font-bold mb-4 text-[#252422]">Sobre o Projeto</h2>
-                <p class="text-base leading-relaxed">
-                    Este painel analisa e compara as implementações de um jogo de roleta criadas por quatro modelos de Inteligência Artificial distintos: Gemini, o3-mini, Claude 3.5 e GPT-4.1. O objetivo é avaliar a qualidade, performance e completude do código gerado por cada IA, a partir de uma mesma especificação técnica. Os dados apresentados são representações para fins de demonstração, ilustrando como uma análise comparativa pode ser estruturada.
-                </p>
-            </section>
+## 📌 Especificação do Projeto
 
-            <section id="dashboard" class="bg-white p-6 rounded-2xl shadow-lg">
-                <h2 class="text-3xl font-bold text-center mb-6 text-[#252422]">Painel de Comparação</h2>
-                
-                <div class="flex justify-center mb-8 border-b-2 border-[#e0dcd5]">
-                    <div id="ai-nav" class="flex flex-wrap justify-center gap-2 md:gap-4 p-2">
-                        <button data-ai="gemini" class="nav-button active px-4 py-2 rounded-lg text-sm md:text-base font-medium">🚀 Gemini</button>
-                        <button data-ai="o3-mini" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">💡 o3-mini</button>
-                        <button data-ai="claude" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">✍️ Claude 3.5</button>
-                        <button data-ai="gpt" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">🧠 GPT-4.1</button>
-                    </div>
-                </div>
+A especificação para a criação deste jogo foi fornecida a diversas inteligências artificiais com o objetivo de comparar suas abordagens e implementações na geração de código. O objetivo principal foi observar como diferentes modelos de IA interpretam e traduzem uma mesma solicitação técnica em uma solução funcional e completa.
 
-                <div id="ai-content-area" class="fade-in">
-                </div>
-            </section>
-            
-            <section id="tech-stack" class="mt-12 text-center">
-                 <h2 class="text-2xl font-bold mb-6 text-[#252422]">Tecnologias Utilizadas</h2>
-                 <div class="flex justify-center items-center gap-6 flex-wrap">
-                    <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
-                        <div class="text-4xl">📄</div>
-                        <p class="mt-2 font-semibold">HTML</p>
-                    </div>
-                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
-                        <div class="text-4xl">🎨</div>
-                        <p class="mt-2 font-semibold">CSS</p>
-                    </div>
-                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
-                        <div class="text-4xl">⚙️</div>
-                        <p class="mt-2 font-semibold">JavaScript</p>
-                    </div>
-                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
-                        <div class="text-4xl">🖌️</div>
-                        <p class="mt-2 font-semibold">Canvas</p>
-                    </div>
-                 </div>
-            </section>
+## 🛠️ Tecnologias Utilizadas
 
-        </main>
+O jogo foi desenvolvido exclusivamente com tecnologias web fundamentais, garantindo leveza, acessibilidade e execução direta no navegador:
 
-        <footer class="text-center mt-12 pt-8 border-t border-[#e0dcd5]">
-            <p class="text-[#6b6862]">Painel gerado para o projeto ComparativeAI. Baseado no README fornecido.</p>
-        </footer>
+- **HTML**: Estrutura base da página web.
+- **CSS**: Estilização e apresentação visual do jogo.
+- **JavaScript**: Lógica do jogo, interatividade e controle das rodadas.
+- **Canvas (HTML5)**: Renderização gráfica da roleta com animações suaves.
 
-    </div>
+## 🤖 Modelos de IA Utilizados
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const aiData = {
-                gemini: {
-                    name: 'Gemini',
-                    description: 'A implementação do Gemini focou em uma estrutura de código modular e clara. A animação da roleta é fluida, utilizando `requestAnimationFrame` de forma eficiente. A interatividade é responsiva, embora o design visual seja mais funcional do que estético.',
-                    strengths: 'Código bem estruturado e de fácil manutenção. Ótima performance de animação.',
-                    weaknesses: 'UI/UX poderia ser mais polida. Algumas funcionalidades secundárias não foram implementadas.',
-                    scores: {
-                        quality: 92,
-                        performance: 95,
-                        features: 85
-                    },
-                    perfMetrics: [90, 8, 95] 
-                },
-                'o3-mini': {
-                    name: 'o3-mini',
-                    description: 'o3-mini produziu um código extremamente conciso e performático, mas com um nível de abstração menor, o que pode dificultar a manutenção. A implementação gráfica é simples, mas funcional, e todas as funcionalidades principais foram entregues.',
-                    strengths: 'Código leve e rápido. Baixo consumo de recursos.',
-                    weaknesses: 'Menor legibilidade e manutenibilidade devido à falta de comentários e modularização.',
-                    scores: {
-                        quality: 78,
-                        performance: 98,
-                        features: 90
-                    },
-                    perfMetrics: [95, 10, 85] 
-                },
-                claude: {
-                    name: 'Claude 3.5',
-                    description: 'Claude 3.5 entregou um resultado muito equilibrado, com um bom design de UI/UX e um código bem documentado. A implementação das regras do jogo foi a mais completa, cobrindo todos os casos de aposta solicitados na especificação.',
-                    strengths: 'Melhor UI/UX e completude de funcionalidades. Código bem comentado.',
-                    weaknesses: 'Performance ligeiramente inferior em dispositivos de baixo desempenho.',
-                    scores: {
-                        quality: 88,
-                        performance: 85,
-                        features: 98
-                    },
-                    perfMetrics: [80, 15, 98]
-                },
-                gpt: {
-                    name: 'GPT-4.1',
-                    description: 'GPT-4.1 gerou uma solução robusta com excelente tratamento de erros e uma estrutura orientada a objetos bem definida. O código é altamente extensível, facilitando a adição de novos tipos de apostas ou funcionalidades no futuro.',
-                    strengths: 'Arquitetura de software sólida e extensível. Ótimo tratamento de casos excepcionais.',
-                    weaknesses: 'Código um pouco mais verboso. A performance gráfica é adequada, mas não se destaca.',
-                    scores: {
-                        quality: 95,
-                        performance: 88,
-                        features: 92
-                    },
-                    perfMetrics: [85, 12, 90]
-                }
-            };
-            
-            const contentArea = document.getElementById('ai-content-area');
-            const navButtons = document.querySelectorAll('.nav-button');
-            let currentCharts = [];
+A mesma especificação foi entregue aos seguintes modelos de IA para comparação:
 
-            const renderAiContent = (aiKey) => {
-                const data = aiData[aiKey];
-                if (!data) return;
+- **Gemini**: Foco em raciocínio multimodal e lógica sofisticada.
+- **o3-mini**: Geração de código conciso e performático.
+- **Claude 3.5**: Ênfase em instruções detalhadas e código bem comentado.
+- **GPT-4.1**: Versatilidade em UI/UX, escalabilidade e completude.
 
-                currentCharts.forEach(chart => chart.destroy());
-                currentCharts = [];
+## 🎯 Objetivo
 
-                contentArea.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                        <div class="space-y-6">
-                            <h3 class="text-2xl font-bold text-[#bfaca3]">${data.name}</h3>
-                            <p class="text-base leading-relaxed">${data.description}</p>
-                            <div>
-                                <h4 class="font-semibold mb-2">Pontos Fortes:</h4>
-                                <p class="text-sm text-green-700 bg-green-100 p-3 rounded-lg">${data.strengths}</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-2">Pontos Fracos:</h4>
-                                <p class="text-sm text-red-700 bg-red-100 p-3 rounded-lg">${data.weaknesses}</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
-                                <h4 class="font-bold mb-2">Qualidade do Código</h4>
-                                <div class="chart-container" style="height:250px; max-height:250px;">
-                                    <canvas id="qualityChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
-                                <h4 class="font-bold mb-2">Funcionalidades</h4>
-                                <div class="chart-container" style="height:250px; max-height:250px;">
-                                    <canvas id="featuresChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="md:col-span-2 bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
-                                <h4 class="font-bold mb-2">Métricas de Performance</h4>
-                                <div class="chart-container">
-                                    <canvas id="performanceChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                renderCharts(data);
-                contentArea.classList.remove('fade-in');
-                void contentArea.offsetWidth;
-                contentArea.classList.add('fade-in');
-            };
+1. Criar uma base de código funcional e jogável para um jogo de roleta.
+2. Realizar uma análise comparativa das implementações geradas por cada IA, considerando:
+   - Qualidade do código
+   - Performance
+   - Completude das funcionalidades
+   - Adaptabilidade para melhorias futuras
 
-            const renderCharts = (data) => {
-                const qualityCtx = document.getElementById('qualityChart').getContext('2d');
-                const featuresCtx = document.getElementById('featuresChart').getContext('2d');
-                const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-                
-                const optionsTemplate = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            bodyFont: { size: 14 },
-                            titleFont: { size: 12 },
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, max: 100 }
-                    }
-                };
+## ▶️ Como Executar o Jogo
 
-                const qualityChart = new Chart(qualityCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: [data.name],
-                        datasets: [{
-                            label: 'Qualidade',
-                            data: [data.scores.quality],
-                            backgroundColor: ['#bfaca3'],
-                            borderColor: ['#8c7a6b'],
-                            borderWidth: 1,
-                            borderRadius: 5
-                        }]
-                    },
-                    options: { ...optionsTemplate }
-                });
-                currentCharts.push(qualityChart);
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/asantana8/ComparativeAI.git
+   cd ComparativeAI
+   ```
 
-                const featuresChart = new Chart(featuresCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Completo', 'Faltando'],
-                        datasets: [{
-                            data: [data.scores.features, 100 - data.scores.features],
-                            backgroundColor: ['#bfaca3', '#e0dcd5'],
-                            borderColor: ['#f4f1eb'],
-                            borderWidth: 2,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } },
-                            tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } }
-                        }
-                    }
-                });
-                currentCharts.push(featuresChart);
+2. Abra o arquivo `index.html` diretamente no seu navegador (Chrome, Firefox, Edge, etc.).
 
-                const performanceChart = new Chart(performanceCtx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Animação (FPS)', 'Leveza (1/ms)', 'Regras (%)'],
-                        datasets: [{
-                            label: data.name,
-                            data: data.perfMetrics,
-                            fill: true,
-                            backgroundColor: 'rgba(191, 172, 163, 0.2)',
-                            borderColor: 'rgb(191, 172, 163)',
-                            pointBackgroundColor: 'rgb(191, 172, 163)',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgb(191, 172, 163)'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            r: {
-                                angleLines: { color: '#e0dcd5' },
-                                grid: { color: '#e0dcd5' },
-                                pointLabels: { font: { size: 12 }, color: '#403d39' },
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            }
-                        }
-                    }
-                });
-                currentCharts.push(performanceChart);
-            };
+> 💡 **Nota**: A estrutura de arquivos pode variar conforme a IA que gerou a implementação. Verifique a organização interna de cada pasta para instruções específicas.
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const aiKey = e.target.getAttribute('data-ai');
-                    renderAiContent(aiKey);
-                });
-            });
-
-            renderAiContent('gemini');
-        });
-    </script>
-
-</body>
-</html>
