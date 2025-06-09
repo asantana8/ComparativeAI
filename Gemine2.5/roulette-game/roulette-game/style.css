@@ -1,0 +1,65 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #eceaec; /* Dark background */
+    font-family: sans-serif;
+}
+
+canvas {
+    border: 5px solid #ecf0f1; /* Light border for the canvas */
+    border-radius: 50%;
+    background-color: #2c3e50; /* Darker wheel color */
+}
+
+.roulette-number {
+    font-family: Arial, sans-serif;
+    font-size: 22px; /* Smaller font size */
+    text-align: center;
+    line-height: 40px; /* Adjust based on the size of the houses */
+    color: #fff; /* White numbers */
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.8); /* Add a text shadow for better visibility */
+}
+
+.zero {
+    background-color: #f1c40f; /* Yellow color for zero */
+    color: #2c3e50; /* Dark text color for zero */
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    border: 2px solid black;
+    border-radius: 50%;
+    position: absolute;
+    transition: transform 0.1s linear;
+}
+
+
+#gameContainer {
+    text-align: center;
+}
+
+#rouletteCanvas {
+    border: 1px solid #000;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+    margin: 20px auto;
+    position: relative;
+    width: 500px; /* Set a fixed width */
+    height: 500px; /* Set a fixed height */
+}
+
+#spinButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #2980b9; /* Blue button */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
