@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<!-- saved from url=(0132)blob:https://2r3e90h5zr15uct3031e94vonfinty79p9ajhpn9lng6v8w63l-h766678603.scf.usercontent.goog/2cba4597-ab44-4913-b3a3-49ebf37b3ee5 -->
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjhmODcxYTU0ODRjYWM0MjU5NTBiNzhiNGZhNWMxZGZlMjkzYjgwYWEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbVwvZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxNzU3NzI2MTA4NjE5NzkyOTk3MyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJleHAiOjE3NDk0MzU5MDUsImlhdCI6MTc0OTQzMjMwNSwiYWxnIjoiUlMyNTYifQ.EC1SVsDnkLHhn6a1xFSZm6JPF9OrT59U0EyCm9B_VL99tJJ7M3AaULxi6ox1qpWgPtqsUsi62g0bd1h04ZcVXHLySI3symsupYZS_CaIUtiYi-CCZOhmSfMjO74f6IlgSSqI1wLBerlhk182uaA7_GaoHZfK8Cijr6m_y1AzGPwis4k9tsO3SJ5B5-8EAEpNByisa2lRmjTslfmaUUvtL-b9e_GNCdFBjH1kjds4rimhTsGB9M8AnjyH-tq2rjnnoCuCLfqgir5BcsuIfe1_99V2oeiRA22UBT0-B6xV2r7V_UFrSfdgQxs3rgKSADpsh3wc4PF4M5L96EEY4pTwtw","c_7e8af2006f6c93f5_comparative-ai-dashboard-238")</script><script>(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script>let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          const mediaPromiseId = nextMediaPromiseId++;
+          const promise = new Promise((resolve, reject) => {
+            pendingMediaResolvers[mediaPromiseId] = (granted) => {
+              delete pendingMediaResolvers[mediaPromiseId];
+              if (granted) {
+                if (originalGetUserMedia) {
+                  originalGetUserMedia(constraints).then(resolve).catch(reject);
+                } else {
+                  reject(new Error("Original getUserMedia not available."));
+                }
+              } else {
+              reject(new DOMException('Permission denied', 'NotAllowedError'));
+            }
+          };
+        });
+
+        window.parent.postMessage({
+          type: 'requestMediaPermission',
+          constraints: constraints,
+          promiseId: mediaPromiseId,
+        }, '*');
+
+        return promise;
+      },
+      writable: false,
+      configurable: false
+    });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script>((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-2.5-flash-preview-04-17","imageModelName":"imagen-3.0-generate-002","videoModelName":"veo-2.0-generate-001","deprecatedTextModelNames":["gemini-2.0-flash"]})</script><script>(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Comparativo de IA: Jogo de Roleta</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals) -->
+    <!-- Application Structure Plan: A single-page dashboard designed for comparison. It starts with a high-level summary (Intro), moves to a detailed, interactive comparison dashboard (Dashboard Section) with charts and qualitative text, and concludes with a technology overview. This structure guides the user from the general project concept to the specific comparative data, making it more digestible than a linear report. Tabs or sections within the dashboard allow for focused analysis of each AI model. -->
+    <!-- Visualization & Content Choices: The README describes a comparison project. Goal: Compare AIs. Method: Side-by-side dashboard. Visualizations: Bar chart for direct score comparison (Code Quality), Radar chart for multi-variable performance comparison (Load Time, FPS), Doughnut chart for percentage-based metric (Feature Completeness). All charts use Chart.js on Canvas. Text blocks provide qualitative analysis. Interaction: Clicking tabs/buttons filters the view to a specific AI, allowing focused study. This approach directly supports the comparison goal. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f1eb;
+            color: #403d39;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #bfaca3;
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-12{margin-bottom:3rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.flex{display:flex}.grid{display:grid}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.gap-2{gap:0.5rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.rounded-2xl{border-radius:1rem}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border-b-2{border-bottom-width:2px}.border-t{border-top-width:1px}.border-\[\#e0dcd5\]{--tw-border-opacity:1;border-color:rgb(224 220 213 / var(--tw-border-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/50{background-color:rgb(255 255 255 / 0.5)}.bg-white\/60{background-color:rgb(255 255 255 / 0.6)}.bg-\[\#fcfaf7\]{--tw-bg-opacity:1;background-color:rgb(252 250 247 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-3{padding:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pt-8{padding-top:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.text-\[\#252422\]{--tw-text-opacity:1;color:rgb(37 36 34 / var(--tw-text-opacity, 1))}.text-\[\#6b6862\]{--tw-text-opacity:1;color:rgb(107 104 98 / var(--tw-text-opacity, 1))}.text-\[\#bfaca3\]{--tw-text-opacity:1;color:rgb(191 172 163 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:col-span-2{grid-column:span 2 / span 2}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:gap-4{gap:1rem}.md\:p-8{padding:2rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-base{font-size:1rem;line-height:1.5rem}}@media (min-width: 1024px){.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#252422] mb-2">🎲 Jogo de Roleta - Desenvolvimento com IA</h1>
+            <p class="text-lg text-[#6b6862]">Um painel comparativo sobre a performance de diferentes modelos de IA na criação de um jogo.</p>
+        </header>
+
+        <main>
+            <section id="introduction" class="mb-12 bg-white/50 p-6 rounded-2xl shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-[#252422]">Sobre o Projeto</h2>
+                <p class="text-base leading-relaxed">
+                    Este painel analisa e compara as implementações de um jogo de roleta criadas por quatro modelos de Inteligência Artificial distintos: Gemini, o3-mini, Claude 3.5 e GPT-4.1. O objetivo é avaliar a qualidade, performance e completude do código gerado por cada IA, a partir de uma mesma especificação técnica. Os dados apresentados são representações para fins de demonstração, ilustrando como uma análise comparativa pode ser estruturada.
+                </p>
+            </section>
+
+            <section id="dashboard" class="bg-white p-6 rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-6 text-[#252422]">Painel de Comparação</h2>
+                
+                <div class="flex justify-center mb-8 border-b-2 border-[#e0dcd5]">
+                    <div id="ai-nav" class="flex flex-wrap justify-center gap-2 md:gap-4 p-2">
+                        <button data-ai="gemini" class="nav-button active px-4 py-2 rounded-lg text-sm md:text-base font-medium">🚀 Gemini</button>
+                        <button data-ai="o3-mini" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">💡 o3-mini</button>
+                        <button data-ai="claude" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">✍️ Claude 3.5</button>
+                        <button data-ai="gpt" class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium">🧠 GPT-4.1</button>
+                    </div>
+                </div>
+
+                <div id="ai-content-area" class="fade-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <div class="space-y-6">
+                            <h3 class="text-2xl font-bold text-[#bfaca3]">Gemini</h3>
+                            <p class="text-base leading-relaxed">A implementação do Gemini focou em uma estrutura de código modular e clara. A animação da roleta é fluida, utilizando `requestAnimationFrame` de forma eficiente. A interatividade é responsiva, embora o design visual seja mais funcional do que estético.</p>
+                            <div>
+                                <h4 class="font-semibold mb-2">Pontos Fortes:</h4>
+                                <p class="text-sm text-green-700 bg-green-100 p-3 rounded-lg">Código bem estruturado e de fácil manutenção. Ótima performance de animação.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Pontos Fracos:</h4>
+                                <p class="text-sm text-red-700 bg-red-100 p-3 rounded-lg">UI/UX poderia ser mais polida. Algumas funcionalidades secundárias não foram implementadas.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Qualidade do Código</h4>
+                                <div class="chart-container" style="height:250px; max-height:250px;">
+                                    <canvas id="qualityChart" width="176" height="250" style="display: block; box-sizing: border-box; height: 250px; width: 176px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Funcionalidades</h4>
+                                <div class="chart-container" style="height:250px; max-height:250px;">
+                                    <canvas id="featuresChart" width="176" height="250" style="display: block; box-sizing: border-box; height: 250px; width: 176px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Métricas de Performance</h4>
+                                <div class="chart-container">
+                                    <canvas id="performanceChart" width="408" height="350" style="display: block; box-sizing: border-box; height: 350px; width: 408px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="tech-stack" class="mt-12 text-center">
+                 <h2 class="text-2xl font-bold mb-6 text-[#252422]">Tecnologias Utilizadas</h2>
+                 <div class="flex justify-center items-center gap-6 flex-wrap">
+                    <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
+                        <div class="text-4xl">📄</div>
+                        <p class="mt-2 font-semibold">HTML</p>
+                    </div>
+                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
+                        <div class="text-4xl">🎨</div>
+                        <p class="mt-2 font-semibold">CSS</p>
+                    </div>
+                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
+                        <div class="text-4xl">⚙️</div>
+                        <p class="mt-2 font-semibold">JavaScript</p>
+                    </div>
+                     <div class="text-center bg-white/60 p-4 rounded-lg shadow-sm">
+                        <div class="text-4xl">🖌️</div>
+                        <p class="mt-2 font-semibold">Canvas</p>
+                    </div>
+                 </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-[#e0dcd5]">
+            <p class="text-[#6b6862]">Painel gerado para o projeto ComparativeAI. Baseado no README fornecido.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiData = {
+                gemini: {
+                    name: 'Gemini',
+                    description: 'A implementação do Gemini focou em uma estrutura de código modular e clara. A animação da roleta é fluida, utilizando `requestAnimationFrame` de forma eficiente. A interatividade é responsiva, embora o design visual seja mais funcional do que estético.',
+                    strengths: 'Código bem estruturado e de fácil manutenção. Ótima performance de animação.',
+                    weaknesses: 'UI/UX poderia ser mais polida. Algumas funcionalidades secundárias não foram implementadas.',
+                    scores: {
+                        quality: 92,
+                        performance: 95,
+                        features: 85
+                    },
+                    perfMetrics: [90, 8, 95] 
+                },
+                'o3-mini': {
+                    name: 'o3-mini',
+                    description: 'o3-mini produziu um código extremamente conciso e performático, mas com um nível de abstração menor, o que pode dificultar a manutenção. A implementação gráfica é simples, mas funcional, e todas as funcionalidades principais foram entregues.',
+                    strengths: 'Código leve e rápido. Baixo consumo de recursos.',
+                    weaknesses: 'Menor legibilidade e manutenibilidade devido à falta de comentários e modularização.',
+                    scores: {
+                        quality: 78,
+                        performance: 98,
+                        features: 90
+                    },
+                    perfMetrics: [95, 10, 85] 
+                },
+                claude: {
+                    name: 'Claude 3.5',
+                    description: 'Claude 3.5 entregou um resultado muito equilibrado, com um bom design de UI/UX e um código bem documentado. A implementação das regras do jogo foi a mais completa, cobrindo todos os casos de aposta solicitados na especificação.',
+                    strengths: 'Melhor UI/UX e completude de funcionalidades. Código bem comentado.',
+                    weaknesses: 'Performance ligeiramente inferior em dispositivos de baixo desempenho.',
+                    scores: {
+                        quality: 88,
+                        performance: 85,
+                        features: 98
+                    },
+                    perfMetrics: [80, 15, 98]
+                },
+                gpt: {
+                    name: 'GPT-4.1',
+                    description: 'GPT-4.1 gerou uma solução robusta com excelente tratamento de erros e uma estrutura orientada a objetos bem definida. O código é altamente extensível, facilitando a adição de novos tipos de apostas ou funcionalidades no futuro.',
+                    strengths: 'Arquitetura de software sólida e extensível. Ótimo tratamento de casos excepcionais.',
+                    weaknesses: 'Código um pouco mais verboso. A performance gráfica é adequada, mas não se destaca.',
+                    scores: {
+                        quality: 95,
+                        performance: 88,
+                        features: 92
+                    },
+                    perfMetrics: [85, 12, 90]
+                }
+            };
+            
+            const contentArea = document.getElementById('ai-content-area');
+            const navButtons = document.querySelectorAll('.nav-button');
+            let currentCharts = [];
+
+            const renderAiContent = (aiKey) => {
+                const data = aiData[aiKey];
+                if (!data) return;
+
+                currentCharts.forEach(chart => chart.destroy());
+                currentCharts = [];
+
+                contentArea.innerHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <div class="space-y-6">
+                            <h3 class="text-2xl font-bold text-[#bfaca3]">${data.name}</h3>
+                            <p class="text-base leading-relaxed">${data.description}</p>
+                            <div>
+                                <h4 class="font-semibold mb-2">Pontos Fortes:</h4>
+                                <p class="text-sm text-green-700 bg-green-100 p-3 rounded-lg">${data.strengths}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Pontos Fracos:</h4>
+                                <p class="text-sm text-red-700 bg-red-100 p-3 rounded-lg">${data.weaknesses}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Qualidade do Código</h4>
+                                <div class="chart-container" style="height:250px; max-height:250px;">
+                                    <canvas id="qualityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Funcionalidades</h4>
+                                <div class="chart-container" style="height:250px; max-height:250px;">
+                                    <canvas id="featuresChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 bg-[#fcfaf7] p-4 rounded-xl shadow-md text-center">
+                                <h4 class="font-bold mb-2">Métricas de Performance</h4>
+                                <div class="chart-container">
+                                    <canvas id="performanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                renderCharts(data);
+                contentArea.classList.remove('fade-in');
+                void contentArea.offsetWidth;
+                contentArea.classList.add('fade-in');
+            };
+
+            const renderCharts = (data) => {
+                const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+                const featuresCtx = document.getElementById('featuresChart').getContext('2d');
+                const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+                
+                const optionsTemplate = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            bodyFont: { size: 14 },
+                            titleFont: { size: 12 },
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                };
+
+                const qualityChart = new Chart(qualityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [data.name],
+                        datasets: [{
+                            label: 'Qualidade',
+                            data: [data.scores.quality],
+                            backgroundColor: ['#bfaca3'],
+                            borderColor: ['#8c7a6b'],
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: { ...optionsTemplate }
+                });
+                currentCharts.push(qualityChart);
+
+                const featuresChart = new Chart(featuresCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completo', 'Faltando'],
+                        datasets: [{
+                            data: [data.scores.features, 100 - data.scores.features],
+                            backgroundColor: ['#bfaca3', '#e0dcd5'],
+                            borderColor: ['#f4f1eb'],
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } },
+                            tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } }
+                        }
+                    }
+                });
+                currentCharts.push(featuresChart);
+
+                const performanceChart = new Chart(performanceCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Animação (FPS)', 'Leveza (1/ms)', 'Regras (%)'],
+                        datasets: [{
+                            label: data.name,
+                            data: data.perfMetrics,
+                            fill: true,
+                            backgroundColor: 'rgba(191, 172, 163, 0.2)',
+                            borderColor: 'rgb(191, 172, 163)',
+                            pointBackgroundColor: 'rgb(191, 172, 163)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(191, 172, 163)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: { color: '#e0dcd5' },
+                                grid: { color: '#e0dcd5' },
+                                pointLabels: { font: { size: 12 }, color: '#403d39' },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+                currentCharts.push(performanceChart);
+            };
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const aiKey = e.target.getAttribute('data-ai');
+                    renderAiContent(aiKey);
+                });
+            });
+
+            renderAiContent('gemini');
+        });
+    </script>
+
+
+
+</body></html>
